@@ -1,6 +1,7 @@
 import express, {Express} from "express";
 import session from "cookie-session";
 import expressLayouts from "express-ejs-layouts";
+import helmet from "helmet";
 import logger from "morgan";
 import path from "node:path";
 import methodOverride from "method-override";
@@ -15,6 +16,7 @@ import {authenticationMiddleware} from "@/middlewares/authentication";
 
 export const loadMiddlewaresForTweetApp = (app: Express): void => {
   loadMethodOverride(app);
+  loadSecureHeaders(app);
   loadLogger(app);
   loadViews(app);
   loadStatic(app);
@@ -23,6 +25,22 @@ export const loadMiddlewaresForTweetApp = (app: Express): void => {
   loadUser(app);
   loadMessage(app);
   loadRouter(app);
+};
+
+const loadSecureHeaders = (app: Express): void => {
+  app.use(helmet());
+  if (app.get("env") === "development" || app.get("env") === "test") {
+    // Setting upgradeInsecureRequests to null in development/test environment
+    // since safari redirects to https even on localhost and the page cannot be displayed.
+    app.use(
+      helmet.contentSecurityPolicy({
+        useDefaults: true,
+        directives: {
+          upgradeInsecureRequests: null,
+        },
+      })
+    );
+  }
 };
 
 const loadMethodOverride = (app: Express): void => {
