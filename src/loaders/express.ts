@@ -77,7 +77,7 @@ const loadSession = (app: Express): void => {
       // by `app.set('trust proxy', 1)`.
       // See https://expressjs.com/en/guide/behind-proxies.html for more details.
       secure: app.get("env") === "production",
-      httpOnly: false,
+      httpOnly: true,
       sameSite: "lax",
       // This MUST be true, otherwise malicious users can set arbitrary cookies
       // and it can lead data breach.
